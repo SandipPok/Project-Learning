@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+Quiz-App-VueJs/quiz-app-ui/.prettierrc
+Quiz-App-VueJs/quiz-app-ui/.eslintrc.js
