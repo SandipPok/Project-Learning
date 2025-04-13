@@ -76,7 +76,7 @@
             </div>
             <div class="p-4 grid grid-cols-2 gap-4">
               <div
-                v-for="subtopic in selectedTopic.subtopics"
+                v-for="subtopic in getSubtopicsForTopic(selectedTopic.id)"
                 :key="subtopic.id"
                 @click="handleSubtopicSelect(subtopic)"
                 :class="[
@@ -116,7 +116,7 @@
                 <div class="flex items-center gap-2 text-sm text-gray-600">
                   <span
                     >Question {{ currentQuestionIndex + 1 }} of
-                    {{ selectedSubtopic?.questions.length }}</span
+                    {{ selectedSubtopicQuestions.length }}</span
                   >
                 </div>
               </div>
@@ -233,14 +233,14 @@
                 </button>
                 <div class="flex gap-2">
                   <button
-                    v-for="(question, index) in selectedSubtopic?.questions"
+                    v-for="(question, index) in selectedSubtopicQuestions"
                     :key="index"
                     @click="setCurrentQuestionIndex(index)"
                     :class="[
                       'w-8 h-8 rounded-full flex items-center justify-center',
                       index === currentQuestionIndex
                         ? 'bg-indigo-600 text-white'
-                        : answers[selectedSubtopic.questions[index].id] !== undefined
+                        : answers[question.id] !== undefined
                           ? 'bg-indigo-100 text-indigo-600'
                           : 'bg-gray-200 text-gray-600',
                     ]"
@@ -250,10 +250,10 @@
                 </div>
                 <button
                   @click="handleNextQuestion"
-                  :disabled="currentQuestionIndex === (selectedSubtopic?.questions.length ?? 0) - 1"
+                  :disabled="currentQuestionIndex === selectedSubtopicQuestions.length - 1"
                   :class="[
                     'flex items-center gap-2 px-4 py-2 rounded-md',
-                    currentQuestionIndex === (selectedSubtopic?.questions.length ?? 0) - 1
+                    currentQuestionIndex === selectedSubtopicQuestions.length - 1
                       ? 'text-gray-400 cursor-not-allowed'
                       : 'text-indigo-600 hover:bg-indigo-50',
                   ]"
@@ -359,182 +359,156 @@ import {
 } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 
-// Data
-const sampleData = [
+// Data - Decoupled structure
+const topics = ref([
+  { id: '1', title: 'C# Fundamentals', category: '.NET' },
+  { id: '2', title: 'ASP.NET Core MVC', category: '.NET' },
+  { id: '3', title: 'Entity Framework Core', category: '.NET' },
+])
+
+const subtopics = ref([
+  { id: 'cs-basics', topicId: '1', title: 'Basic Concepts' },
+  { id: 'cs-oop', topicId: '1', title: 'Object-Oriented Programming' },
+  { id: 'mvc-basics', topicId: '2', title: 'MVC Pattern' },
+  { id: 'ef-basics', topicId: '3', title: 'Basic Concepts' },
+])
+
+const questions = ref([
   {
-    id: '1',
-    title: 'C# Fundamentals',
-    category: '.NET',
-    subtopics: [
-      {
-        id: 'cs-basics',
-        title: 'Basic Concepts',
-        questions: [
-          {
-            id: 'q1',
-            text: 'What is the correct way to declare a constant in C#?',
-            options: [
-              'static readonly int MAX_VALUE = 100;',
-              'const int MAX_VALUE = 100;',
-              'final int MAX_VALUE = 100;',
-              'immutable int MAX_VALUE = 100;',
-            ],
-            correctAnswer: 1,
-            facts: [
-              'Constants in C# are immutable values that are known at compile time.',
-              'Constants are declared using the const keyword followed by the type and name.',
-              'Constants must be initialized at the time of declaration.',
-              'Only primitive types (such as int, string, bool) can be declared as constants.',
-            ],
-            examples: [
-              'const int MAX_USERS = 100; // Integer constant',
-              'const string CONNECTION_STRING = "Server=myServerAddress;Database=myDataBase;"; // String constant',
-              'const double PI = 3.14159; // Double constant',
-              "const char GRADE_A = 'A'; // Character constant",
-            ],
-          },
-          {
-            id: 'q2',
-            text: 'Which of the following is a value type in C#?',
-            options: ['string', 'object', 'int', 'dynamic'],
-            correctAnswer: 2,
-            facts: [
-              'Value types in C# store the actual data directly in memory allocated on the stack.',
-              'Reference types store a reference to the data, with the actual data stored on the heap.',
-              'Value types include all numeric types, bool, char, and structs.',
-              'Value types are copied when assigned to a new variable or passed to a method.',
-            ],
-            examples: [
-              'int number = 42; // Value type',
-              'bool isActive = true; // Value type',
-              "char letter = 'A'; // Value type",
-              'struct Point { public int X; public int Y; } // Custom value type',
-            ],
-          },
-        ],
-      },
-      {
-        id: 'cs-oop',
-        title: 'Object-Oriented Programming',
-        questions: [
-          {
-            id: 'q3',
-            text: 'What is the purpose of the "sealed" keyword in C#?',
-            options: [
-              'To prevent a class from being instantiated',
-              'To prevent a class from being inherited',
-              'To make a class thread-safe',
-              'To make a class immutable',
-            ],
-            correctAnswer: 1,
-            facts: [
-              'The sealed keyword prevents other classes from inheriting from a class.',
-              'Sealed classes can be instantiated and used normally.',
-              'Methods and properties can also be marked as sealed in derived classes.',
-              'Sealed classes can improve performance as the compiler can optimize certain aspects.',
-            ],
-            examples: [
-              'public sealed class Logger { /* ... */ } // Cannot be inherited',
-              'public class Shape { public virtual void Draw() { } }',
-              'public class Circle : Shape { public sealed override void Draw() { } } // Method cannot be overridden in derived classes',
-              'public class SpecialCircle : Circle { /* Cannot override Draw() */ }',
-            ],
-          },
-        ],
-      },
+    id: 'q1',
+    subtopicId: 'cs-basics',
+    text: 'What is the correct way to declare a constant in C#?',
+    options: [
+      'static readonly int MAX_VALUE = 100;',
+      'const int MAX_VALUE = 100;',
+      'final int MAX_VALUE = 100;',
+      'immutable int MAX_VALUE = 100;',
+    ],
+    correctAnswer: 1,
+    facts: [
+      'Constants in C# are immutable values that are known at compile time.',
+      'Constants are declared using the const keyword followed by the type and name.',
+      'Constants must be initialized at the time of declaration.',
+      'Only primitive types (such as int, string, bool) can be declared as constants.',
+    ],
+    examples: [
+      'const int MAX_USERS = 100; // Integer constant',
+      'const string CONNECTION_STRING = "Server=myServerAddress;Database=myDataBase;"; // String constant',
+      'const double PI = 3.14159; // Double constant',
+      "const char GRADE_A = 'A'; // Character constant",
     ],
   },
   {
-    id: '2',
-    title: 'ASP.NET Core MVC',
-    category: '.NET',
-    subtopics: [
-      {
-        id: 'mvc-basics',
-        title: 'MVC Pattern',
-        questions: [
-          {
-            id: 'q4',
-            text: 'Which of the following is responsible for handling user requests in ASP.NET Core MVC?',
-            options: ['Model', 'View', 'Controller', 'Router'],
-            correctAnswer: 2,
-            facts: [
-              'Controllers in MVC handle incoming HTTP requests and decide what response to send back.',
-              'Controllers contain action methods that correspond to different routes and HTTP verbs.',
-              'Controllers interact with models to retrieve or update data.',
-              'Controllers select which view to render as the response.',
-            ],
-            examples: [
-              'public class HomeController : Controller { public IActionResult Index() { return View(); } }',
-              '[HttpPost] public IActionResult Create(ProductModel product) { /* Save product */ return RedirectToAction("Index"); }',
-              '[Route("api/[controller]")] public class ProductsController : ControllerBase { /* API endpoints */ }',
-              'public IActionResult Details(int id) { var product = _repository.GetById(id); return View(product); }',
-            ],
-          },
-          {
-            id: 'q5',
-            text: 'What is the purpose of the ViewBag in ASP.NET Core MVC?',
-            options: [
-              'To store session state',
-              'To pass data from controller to view',
-              'To handle form submissions',
-              'To manage database connections',
-            ],
-            correctAnswer: 1,
-            facts: [
-              'ViewBag is a dynamic property that allows passing data from controller to view.',
-              'ViewBag uses the dynamic feature of C# to create properties at runtime.',
-              'ViewBag data is only available during the current request.',
-              'ViewData is an alternative to ViewBag that uses a dictionary instead of dynamic properties.',
-            ],
-            examples: [
-              'public IActionResult Index() { ViewBag.Title = "Home Page"; return View(); }',
-              'In view: <h1>@ViewBag.Title</h1>',
-              'ViewBag.UserList = new List<User>(); // Passing a collection',
-              'ViewBag.CurrentDate = DateTime.Now; // Passing a DateTime object',
-            ],
-          },
-        ],
-      },
+    id: 'q2',
+    subtopicId: 'cs-basics',
+    text: 'Which of the following is a value type in C#?',
+    options: ['string', 'object', 'int', 'dynamic'],
+    correctAnswer: 2,
+    facts: [
+      'Value types in C# store the actual data directly in memory allocated on the stack.',
+      'Reference types store a reference to the data, with the actual data stored on the heap.',
+      'Value types include all numeric types, bool, char, and structs.',
+      'Value types are copied when assigned to a new variable or passed to a method.',
+    ],
+    examples: [
+      'int number = 42; // Value type',
+      'bool isActive = true; // Value type',
+      "char letter = 'A'; // Value type",
+      'struct Point { public int X; public int Y; } // Custom value type',
     ],
   },
   {
-    id: '3',
-    title: 'Entity Framework Core',
-    category: '.NET',
-    subtopics: [
-      {
-        id: 'ef-basics',
-        title: 'Basic Concepts',
-        questions: [
-          {
-            id: 'q6',
-            text: 'What is the purpose of DbContext in Entity Framework Core?',
-            options: [
-              'To handle HTTP requests',
-              'To manage database connections and operations',
-              'To render views',
-              'To handle user authentication',
-            ],
-            correctAnswer: 1,
-            facts: [
-              'DbContext is the primary class that coordinates Entity Framework functionality for a data model.',
-              'DbContext represents a session with the database, allowing querying and saving data.',
-              'DbContext includes DbSet<T> properties that represent collections of entities in the database.',
-              'DbContext manages change tracking, caching, and transaction management.',
-            ],
-            examples: [
-              'public class ApplicationDbContext : DbContext { public DbSet<Customer> Customers { get; set; } }',
-              'using (var context = new ApplicationDbContext()) { var customers = context.Customers.ToList(); }',
-              'context.Customers.Add(new Customer { Name = "John Doe" }); context.SaveChanges();',
-              'var customer = context.Customers.Find(1); customer.Name = "Jane Doe"; context.SaveChanges();',
-            ],
-          },
-        ],
-      },
+    id: 'q3',
+    subtopicId: 'cs-oop',
+    text: 'What is the purpose of the "sealed" keyword in C#?',
+    options: [
+      'To prevent a class from being instantiated',
+      'To prevent a class from being inherited',
+      'To make a class thread-safe',
+      'To make a class immutable',
+    ],
+    correctAnswer: 1,
+    facts: [
+      'The sealed keyword prevents other classes from inheriting from a class.',
+      'Sealed classes can be instantiated and used normally.',
+      'Methods and properties can also be marked as sealed in derived classes.',
+      'Sealed classes can improve performance as the compiler can optimize certain aspects.',
+    ],
+    examples: [
+      'public sealed class Logger { /* ... */ } // Cannot be inherited',
+      'public class Shape { public virtual void Draw() { } }',
+      'public class Circle : Shape { public sealed override void Draw() { } } // Method cannot be overridden in derived classes',
+      'public class SpecialCircle : Circle { /* Cannot override Draw() */ }',
     ],
   },
-]
+  {
+    id: 'q4',
+    subtopicId: 'mvc-basics',
+    text: 'Which of the following is responsible for handling user requests in ASP.NET Core MVC?',
+    options: ['Model', 'View', 'Controller', 'Router'],
+    correctAnswer: 2,
+    facts: [
+      'Controllers in MVC handle incoming HTTP requests and decide what response to send back.',
+      'Controllers contain action methods that correspond to different routes and HTTP verbs.',
+      'Controllers interact with models to retrieve or update data.',
+      'Controllers select which view to render as the response.',
+    ],
+    examples: [
+      'public class HomeController : Controller { public IActionResult Index() { return View(); } }',
+      '[HttpPost] public IActionResult Create(ProductModel product) { /* Save product */ return RedirectToAction("Index"); }',
+      '[Route("api/[controller]")] public class ProductsController : ControllerBase { /* API endpoints */ }',
+      'public IActionResult Details(int id) { var product = _repository.GetById(id); return View(product); }',
+    ],
+  },
+  {
+    id: 'q5',
+    subtopicId: 'mvc-basics',
+    text: 'What is the purpose of the ViewBag in ASP.NET Core MVC?',
+    options: [
+      'To store session state',
+      'To pass data from controller to view',
+      'To handle form submissions',
+      'To manage database connections',
+    ],
+    correctAnswer: 1,
+    facts: [
+      'ViewBag is a dynamic property that allows passing data from controller to view.',
+      'ViewBag uses the dynamic feature of C# to create properties at runtime.',
+      'ViewBag data is only available during the current request.',
+      'ViewData is an alternative to ViewBag that uses a dictionary instead of dynamic properties.',
+    ],
+    examples: [
+      'public IActionResult Index() { ViewBag.Title = "Home Page"; return View(); }',
+      'In view: <h1>@ViewBag.Title</h1>',
+      'ViewBag.UserList = new List<User>(); // Passing a collection',
+      'ViewBag.CurrentDate = DateTime.Now; // Passing a DateTime object',
+    ],
+  },
+  {
+    id: 'q6',
+    subtopicId: 'ef-basics',
+    text: 'What is the purpose of DbContext in Entity Framework Core?',
+    options: [
+      'To handle HTTP requests',
+      'To manage database connections and operations',
+      'To render views',
+      'To handle user authentication',
+    ],
+    correctAnswer: 1,
+    facts: [
+      'DbContext is the primary class that coordinates Entity Framework functionality for a data model.',
+      'DbContext represents a session with the database, allowing querying and saving data.',
+      'DbContext includes DbSet<T> properties that represent collections of entities in the database.',
+      'DbContext manages change tracking, caching, and transaction management.',
+    ],
+    examples: [
+      'public class ApplicationDbContext : DbContext { public DbSet<Customer> Customers { get; set; } }',
+      'using (var context = new ApplicationDbContext()) { var customers = context.Customers.ToList(); }',
+      'context.Customers.Add(new Customer { Name = "John Doe" }); context.SaveChanges();',
+      'var customer = context.Customers.Find(1); customer.Name = "Jane Doe"; context.SaveChanges();',
+    ],
+  },
+])
 
 // Reactive state
 const selectedTopic = ref(null)
@@ -548,36 +522,16 @@ const showExamples = ref(false)
 const isImportModalOpen = ref(false)
 const dragActive = ref(false)
 const fileInputRef = ref(null)
-const setDragActive = value => {
-  dragActive.value = value
-}
-const setCurrentQuestionIndex = index => {
-  currentQuestionIndex.value = index
-  showFacts.value = false
-  showExamples.value = false
-}
-const handleFiles = files => {
-  if (files.length > 0) {
-    const file = files[0]
-    const reader = new FileReader()
-    reader.onload = e => {
-      const content = e.target.result
-      // Process the CSV content here
-      console.log('CSV content:', content)
-    }
-    reader.readAsText(file)
-  }
-}
 
 // Computed properties
 const categories = computed(() => {
-  const uniqueCategories = [...new Set(sampleData.map(topic => topic.category))]
+  const uniqueCategories = [...new Set(topics.value.map(topic => topic.category))]
   return uniqueCategories.map(name => ({ id: name.toLowerCase(), name }))
 })
 
 const filteredTopics = computed(() => {
-  if (!searchQuery.value) return sampleData
-  return sampleData.filter(
+  if (!searchQuery.value) return topics.value
+  return topics.value.filter(
     topic =>
       topic.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       topic.category.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -591,9 +545,14 @@ const topicsByCategory = computed(() => {
   }, {})
 })
 
-const currentQuestion = computed(
-  () => selectedSubtopic.value?.questions[currentQuestionIndex.value] || null
-)
+const selectedSubtopicQuestions = computed(() => {
+  if (!selectedSubtopic.value) return []
+  return questions.value.filter(q => q.subtopicId === selectedSubtopic.value.id)
+})
+
+const currentQuestion = computed(() => {
+  return selectedSubtopicQuestions.value[currentQuestionIndex.value] || null
+})
 
 // Methods
 const toggleCategory = category => {
@@ -604,6 +563,10 @@ const handleTopicSelect = topic => {
   selectedTopic.value = topic
   selectedSubtopic.value = null
   currentQuestionIndex.value = 0
+}
+
+const getSubtopicsForTopic = topicId => {
+  return subtopics.value.filter(subtopic => subtopic.topicId === topicId)
 }
 
 const handleSubtopicSelect = subtopic => {
@@ -618,15 +581,13 @@ const handleAnswerSelect = (questionId, answerIndex) => {
 }
 
 const getProgress = subtopic => {
-  const answered = subtopic.questions.filter(q => answers.value[q.id] !== undefined).length
-  return Math.round((answered / subtopic.questions.length) * 100)
+  const subtopicQuestions = questions.value.filter(q => q.subtopicId === subtopic.id)
+  const answered = subtopicQuestions.filter(q => answers.value[q.id] !== undefined).length
+  return Math.round((answered / subtopicQuestions.length) * 100) || 0
 }
 
 const handleNextQuestion = () => {
-  if (
-    selectedSubtopic.value &&
-    currentQuestionIndex.value < selectedSubtopic.value.questions.length - 1
-  ) {
+  if (currentQuestionIndex.value < selectedSubtopicQuestions.value.length - 1) {
     currentQuestionIndex.value++
     showFacts.value = false
     showExamples.value = false
@@ -641,16 +602,37 @@ const handlePreviousQuestion = () => {
   }
 }
 
+const setCurrentQuestionIndex = index => {
+  currentQuestionIndex.value = index
+  showFacts.value = false
+  showExamples.value = false
+}
+
 const toggleFacts = () => {
   showExamples.value = false
   showFacts.value = !showFacts.value
-  if (!showFacts.value) showExamples.value = false
 }
 
 const toggleExamples = () => {
   showFacts.value = false
   showExamples.value = !showExamples.value
-  if (!showExamples.value) showFacts.value = false
+}
+
+const setDragActive = value => {
+  dragActive.value = value
+}
+
+const handleFiles = files => {
+  if (files.length > 0) {
+    const file = files[0]
+    const reader = new FileReader()
+    reader.onload = e => {
+      const content = e.target.result
+      // Process the CSV content here
+      console.log('CSV content:', content)
+    }
+    reader.readAsText(file)
+  }
 }
 
 const handleDrag = e => {
