@@ -1,4 +1,4 @@
-@Quiz_App_VueJs_HostAddress = https://localhost:44358
+@Quiz_App_VueJs_HostAddress = https://localhost:44358/api
 
 ### Get Topics
 GET {{Quiz_App_VueJs_HostAddress}}/v1/getTopics/

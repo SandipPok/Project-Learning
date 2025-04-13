@@ -31,7 +31,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-var apiV1 = app.MapGroup("/v1");
+var apiV1 = app.MapGroup("/api/v1");
 apiV1.MapGet("/getTopics", () =>
 {
     string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
