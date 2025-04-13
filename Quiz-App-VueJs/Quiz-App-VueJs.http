@@ -1,6 +1,9 @@
-@Quiz_App_VueJs_HostAddress = http://localhost:5021
+@Quiz_App_VueJs_HostAddress = https://localhost:44358
 
-GET {{Quiz_App_VueJs_HostAddress}}/weatherforecast/
+### Get Topics
+GET {{Quiz_App_VueJs_HostAddress}}/v1/getTopics/
 Accept: application/json
 
-###
+### Get SubTopics v1
+GET {{Quiz_App_VueJs_HostAddress}}/v1/getSubTopics?id=1
+Accept: application/json

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "C# Fundamentals",
+    "category": ".Net"
+  },
+  {
+    "id": 2,
+    "title": "ASP.NET Core MVC",
+    "category": ".Net"
+  },
+  {
+    "id": 3,
+    "title": "Entity Framework Core",
+    "category": ".Net"
+  }
+]
