@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Quiz_App_VueJs.Models;
 using Scalar.AspNetCore;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -161,6 +162,33 @@ apiV1.MapGet("/getSubTopics", (int id) =>
         return Results.NotFound($"No subtopics found for TopicId {id}.");
 
     return Results.Ok(filteredSubTopics);
+});
+
+apiV1.MapGet("/getQuestions", async (string? subTopicId) =>
+{
+    if (string.IsNullOrEmpty(subTopicId))
+        return Results.BadRequest("SubTopic ID is required.");
+
+    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
+    if (!File.Exists(filePath))
+        return Results.NotFound("Questions data file not found.");
+
+    var filteredQuestions = new List<Questions>();
+
+    await using FileStream fs = File.OpenRead(filePath);
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+    await foreach (var question in JsonSerializer.DeserializeAsyncEnumerable<Questions>(fs, options))
+    {
+        if (question is { SubTopicId: not null } && question.SubTopicId.Equals(subTopicId, StringComparison.OrdinalIgnoreCase))
+        {
+            filteredQuestions.Add(question);
+        }
+    }
+
+    return filteredQuestions.Count == 0
+        ? Results.NotFound($"No questions found for subTopicId '{subTopicId}'.")
+        : Results.Ok(filteredQuestions);
 });
 
 app.Run();

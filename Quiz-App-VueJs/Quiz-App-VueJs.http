@@ -7,3 +7,7 @@ Accept: application/json
 ### Get SubTopics v1
 GET {{Quiz_App_VueJs_HostAddress}}/v1/getSubTopics?id=1
 Accept: application/json
+
+### Get Questions v1
+GET {{Quiz_App_VueJs_HostAddress}}/v1/getQuestions?subTopicId=cs-basics
+Accept: application/json
