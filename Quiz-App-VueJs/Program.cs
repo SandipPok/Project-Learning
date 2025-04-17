@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Quiz_App_VueJs.Data;
 using Quiz_App_VueJs.Models;
 using Scalar.AspNetCore;
 using System.Collections.ObjectModel;
@@ -9,6 +10,7 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IRepository, Repository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -32,23 +34,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+#region v1
 var apiV1 = app.MapGroup("/api/v1");
-apiV1.MapGet("/getTopics", () =>
+apiV1.MapGet("/getTopics",  () =>
 {
     string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
-
-    //if (requestFile == RequestFileName.topics.ToString())
-    //{
-    //    filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
-    //}
-    //else if (requestFile == RequestFileName.subtopics.ToString())
-    //{
-    //    filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\subtopics.json";
-    //}
-    //else if (requestFile == RequestFileName.questions.ToString())
-    //{
-    //    filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
-    //}
 
     using FileStream fs = File.OpenRead(filePath);
     using StreamReader reader = new StreamReader(fs);
@@ -190,5 +180,54 @@ apiV1.MapGet("/getQuestions", async (string? subTopicId) =>
         ? Results.NotFound($"No questions found for subTopicId '{subTopicId}'.")
         : Results.Ok(filteredQuestions);
 });
+#endregion
+
+#region v2
+var apiV2 = app.MapGroup("/api/v2");
+apiV2.MapGet("/getTopics", async () =>
+{
+    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
+    var repository = new Repository();
+    var topics = await repository.GetCollectionAsync<Topics>(filePath);
+    return Results.Ok(topics);
+});
+
+
+apiV2.MapGet("/getSubTopics", async (int id) =>
+{
+    if (id <= 0)
+        return Results.BadRequest("Invalid Topic ID.");
+
+    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\subtopics.json";
+    var repository = new Repository();
+
+    var subtopics = await repository.GetCollectionAsync<SubTopics>(
+        filePath,
+        s => s.TopicId == id
+    );
+
+    return subtopics.Count == 0
+        ? Results.NotFound($"No subtopics found for TopicId {id}.")
+        : Results.Ok(subtopics);
+});
+
+apiV2.MapGet("/getQuestions", async (string? subTopicId) =>
+{
+    if (string.IsNullOrEmpty(subTopicId))
+        return Results.BadRequest("SubTopic ID is required.");
+
+    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
+    var repository = new Repository();
+
+    var questions = await repository.GetCollectionAsync<Questions>(
+        filePath,
+        q => q.SubTopicId?.Equals(subTopicId, StringComparison.OrdinalIgnoreCase) == true
+    );
+
+    return questions.Count == 0
+        ? Results.NotFound($"No questions found for subTopicId '{subTopicId}'.")
+        : Results.Ok(questions);
+});
+#endregion
 
 app.Run();
