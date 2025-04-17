@@ -113,11 +113,20 @@
                     selectedSubtopic?.title
                   }}</span>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-gray-600">
-                  <span
-                    >Question {{ currentQuestionIndex + 1 }} of
-                    {{ selectedSubtopicQuestions.length }}</span
+                <div class="flex items-center gap-4">
+                  <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <span
+                      >Question {{ currentQuestionIndex + 1 }} of
+                      {{ selectedSubtopicQuestions.length }}</span
+                    >
+                  </div>
+                  <button
+                    @click="resetSubtopicProgress"
+                    class="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
                   >
+                    <RotateCcw class="w-4 h-4" />
+                    Reset
+                  </button>
                 </div>
               </div>
             </div>
@@ -130,21 +139,64 @@
                   @click="handleAnswerSelect(currentQuestion.id, index)"
                   :class="[
                     'w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors',
-                    answers[currentQuestion.id] === index
-                      ? 'border-indigo-500 bg-indigo-50'
+                    currentQuestion.selectedAnswer === index
+                      ? isAnswerCorrect(currentQuestion)
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-red-500 bg-red-50'
                       : 'border-gray-200 hover:border-indigo-200',
                   ]"
                 >
-                  <Circle
-                    v-if="answers[currentQuestion.id] !== index"
-                    class="w-5 h-5 text-gray-400"
-                  />
-                  <CheckCircle2
-                    v-if="answers[currentQuestion.id] === index"
-                    class="w-5 h-5 text-indigo-600"
-                  />
+                  <template v-if="currentQuestion.selectedAnswer !== null">
+                    <CheckCircle2
+                      v-if="
+                        isAnswerCorrect(currentQuestion) && currentQuestion.selectedAnswer === index
+                      "
+                      class="w-5 h-5 text-green-600"
+                    />
+                    <XCircle
+                      v-else-if="
+                        !isAnswerCorrect(currentQuestion) &&
+                        currentQuestion.selectedAnswer === index
+                      "
+                      class="w-5 h-5 text-red-600"
+                    />
+                    <CheckCircle2
+                      v-else-if="index === currentQuestion.correctAnswer"
+                      class="w-5 h-5 text-green-600"
+                    />
+                    <Circle v-else class="w-5 h-5 text-gray-400" />
+                  </template>
+                  <Circle v-else class="w-5 h-5 text-gray-400" />
                   <span>{{ option }}</span>
                 </button>
+              </div>
+
+              <!-- Score Section -->
+              <div v-if="showScore" class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h4 class="text-lg font-medium text-gray-800 flex items-center gap-2 mb-3">
+                  <Award class="w-5 h-5" />
+                  Your Progress
+                </h4>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600">{{ correctAnswersCount }}</div>
+                    <div class="text-sm text-gray-600">Correct</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600">{{ incorrectAnswersCount }}</div>
+                    <div class="text-sm text-gray-600">Incorrect</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-600">
+                      {{
+                        Math.round(
+                          (correctAnswersCount / selectedSubtopicQuestions.length) * 100
+                        ) || 0
+                      }}%
+                    </div>
+                    <div class="text-sm text-gray-600">Score</div>
+                  </div>
+                </div>
               </div>
 
               <!-- Facts and Examples Buttons -->
@@ -240,8 +292,10 @@
                       'w-8 h-8 rounded-full flex items-center justify-center',
                       index === currentQuestionIndex
                         ? 'bg-indigo-600 text-white'
-                        : answers[question.id] !== undefined
-                          ? 'bg-indigo-100 text-indigo-600'
+                        : question.selectedAnswer !== null
+                          ? isAnswerCorrect(question)
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-red-100 text-red-600'
                           : 'bg-gray-200 text-gray-600',
                     ]"
                   >
@@ -356,8 +410,11 @@ import {
   Info,
   Code,
   Lightbulb,
+  RotateCcw,
+  XCircle,
+  Award,
 } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 // Data - Decoupled structure
 const topics = ref([
@@ -385,6 +442,7 @@ const questions = ref([
       'immutable int MAX_VALUE = 100;',
     ],
     correctAnswer: 1,
+    selectedAnswer: null,
     facts: [
       'Constants in C# are immutable values that are known at compile time.',
       'Constants are declared using the const keyword followed by the type and name.',
@@ -404,6 +462,7 @@ const questions = ref([
     text: 'Which of the following is a value type in C#?',
     options: ['string', 'object', 'int', 'dynamic'],
     correctAnswer: 2,
+    selectedAnswer: null,
     facts: [
       'Value types in C# store the actual data directly in memory allocated on the stack.',
       'Reference types store a reference to the data, with the actual data stored on the heap.',
@@ -428,6 +487,7 @@ const questions = ref([
       'To make a class immutable',
     ],
     correctAnswer: 1,
+    selectedAnswer: null,
     facts: [
       'The sealed keyword prevents other classes from inheriting from a class.',
       'Sealed classes can be instantiated and used normally.',
@@ -447,6 +507,7 @@ const questions = ref([
     text: 'Which of the following is responsible for handling user requests in ASP.NET Core MVC?',
     options: ['Model', 'View', 'Controller', 'Router'],
     correctAnswer: 2,
+    selectedAnswer: null,
     facts: [
       'Controllers in MVC handle incoming HTTP requests and decide what response to send back.',
       'Controllers contain action methods that correspond to different routes and HTTP verbs.',
@@ -471,6 +532,7 @@ const questions = ref([
       'To manage database connections',
     ],
     correctAnswer: 1,
+    selectedAnswer: null,
     facts: [
       'ViewBag is a dynamic property that allows passing data from controller to view.',
       'ViewBag uses the dynamic feature of C# to create properties at runtime.',
@@ -495,6 +557,7 @@ const questions = ref([
       'To handle user authentication',
     ],
     correctAnswer: 1,
+    selectedAnswer: null,
     facts: [
       'DbContext is the primary class that coordinates Entity Framework functionality for a data model.',
       'DbContext represents a session with the database, allowing querying and saving data.',
@@ -522,6 +585,7 @@ const showExamples = ref(false)
 const isImportModalOpen = ref(false)
 const dragActive = ref(false)
 const fileInputRef = ref(null)
+const showScore = ref(false)
 
 // Computed properties
 const categories = computed(() => {
@@ -554,6 +618,20 @@ const currentQuestion = computed(() => {
   return selectedSubtopicQuestions.value[currentQuestionIndex.value] || null
 })
 
+const correctAnswersCount = computed(() => {
+  if (!selectedSubtopic.value) return 0
+  return selectedSubtopicQuestions.value.filter(
+    q => q.selectedAnswer !== null && q.selectedAnswer === q.correctAnswer
+  ).length
+})
+
+const incorrectAnswersCount = computed(() => {
+  if (!selectedSubtopic.value) return 0
+  return selectedSubtopicQuestions.value.filter(
+    q => q.selectedAnswer !== null && q.selectedAnswer !== q.correctAnswer
+  ).length
+})
+
 // Methods
 const toggleCategory = category => {
   expandedCategories.value[category] = !expandedCategories.value[category]
@@ -563,6 +641,7 @@ const handleTopicSelect = topic => {
   selectedTopic.value = topic
   selectedSubtopic.value = null
   currentQuestionIndex.value = 0
+  showScore.value = false
 }
 
 const getSubtopicsForTopic = topicId => {
@@ -574,15 +653,37 @@ const handleSubtopicSelect = subtopic => {
   currentQuestionIndex.value = 0
   showFacts.value = false
   showExamples.value = false
+  showScore.value = false
+}
+
+const isAnswerCorrect = question => {
+  return question.selectedAnswer === question.correctAnswer
+}
+
+const resetSubtopicProgress = () => {
+  if (!selectedSubtopic.value) return
+
+  questions.value
+    .filter(q => q.subtopicId === selectedSubtopic.value.id)
+    .forEach(q => {
+      q.selectedAnswer = null
+    })
+
+  currentQuestionIndex.value = 0
+  showScore.value = false
 }
 
 const handleAnswerSelect = (questionId, answerIndex) => {
-  answers.value[questionId] = answerIndex
+  const question = questions.value.find(q => q.id === questionId)
+  if (question) {
+    question.selectedAnswer = answerIndex
+  }
+  showScore.value = true
 }
 
 const getProgress = subtopic => {
   const subtopicQuestions = questions.value.filter(q => q.subtopicId === subtopic.id)
-  const answered = subtopicQuestions.filter(q => answers.value[q.id] !== undefined).length
+  const answered = subtopicQuestions.filter(q => q.selectedAnswer !== null).length
   return Math.round((answered / subtopicQuestions.length) * 100) || 0
 }
 
@@ -591,6 +692,7 @@ const handleNextQuestion = () => {
     currentQuestionIndex.value++
     showFacts.value = false
     showExamples.value = false
+    showScore.value = false
   }
 }
 
@@ -599,6 +701,7 @@ const handlePreviousQuestion = () => {
     currentQuestionIndex.value--
     showFacts.value = false
     showExamples.value = false
+    showScore.value = false
   }
 }
 
@@ -606,6 +709,7 @@ const setCurrentQuestionIndex = index => {
   currentQuestionIndex.value = index
   showFacts.value = false
   showExamples.value = false
+  showScore.value = false
 }
 
 const toggleFacts = () => {
@@ -622,13 +726,13 @@ const setDragActive = value => {
   dragActive.value = value
 }
 
-const handleFiles = files => {
+const handleFiles = event => {
+  const files = event.target.files || event.dataTransfer.files
   if (files.length > 0) {
     const file = files[0]
     const reader = new FileReader()
     reader.onload = e => {
       const content = e.target.result
-      // Process the CSV content here
       console.log('CSV content:', content)
     }
     reader.readAsText(file)
@@ -651,7 +755,26 @@ const handleDrop = e => {
   setDragActive(false)
 
   if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-    handleFiles(e.dataTransfer.files)
+    handleFiles(e)
   }
 }
+
+// // LocalStorage persistence
+// const STORAGE_KEY = 'quiz-app-answers'
+
+// const loadAnswersFromStorage = () => {
+//   const savedAnswers = localStorage.getItem(STORAGE_KEY)
+//   if (savedAnswers) {
+//     answers.value = JSON.parse(savedAnswers)
+//   }
+// }
+
+// const saveAnswersToStorage = () => {
+//   localStorage.setItem(STORAGE_KEY, JSON.stringify(answers.value))
+// }
+
+// // Load answers when component mounts
+// onMounted(() => {
+//   loadAnswersFromStorage()
+// })
 </script>
