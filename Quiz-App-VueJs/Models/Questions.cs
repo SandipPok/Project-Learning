@@ -7,6 +7,7 @@
         public string? Text { get; set; }
         public List<string> Options { get; set; } = new();
         public int CorrectAnswer { get; set; }
+        public int? SelectedAnswer { get; set; }
         public List<string> Facts { get; set; } = new();
         public List<string> Examples { get; set; } = new();
     }

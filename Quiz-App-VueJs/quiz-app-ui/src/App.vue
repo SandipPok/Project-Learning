@@ -95,7 +95,7 @@
                     <div
                       class="bg-indigo-600 h-2 rounded-full"
                       :style="{ width: `${getProgress(subtopic)}%` }"
-                    />
+                    ></div>
                   </div>
                   <span>{{ getProgress(subtopic) }}%</span>
                 </div>

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Quiz_App_VueJs.Data;
 using Quiz_App_VueJs.Models;
 using Scalar.AspNetCore;
@@ -36,7 +37,7 @@ app.UseAuthorization();
 
 #region v1
 var apiV1 = app.MapGroup("/api/v1");
-apiV1.MapGet("/getTopics",  () =>
+apiV1.MapGet("/getTopics", () =>
 {
     string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
 
@@ -192,7 +193,6 @@ apiV2.MapGet("/getTopics", async () =>
     return Results.Ok(topics);
 });
 
-
 apiV2.MapGet("/getSubTopics", async (int id) =>
 {
     if (id <= 0)
@@ -227,6 +227,25 @@ apiV2.MapGet("/getQuestions", async (string? subTopicId) =>
     return questions.Count == 0
         ? Results.NotFound($"No questions found for subTopicId '{subTopicId}'.")
         : Results.Ok(questions);
+});
+
+apiV2.MapPut("/updateTopics", async ([FromBody] Topics topic) =>
+{
+    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
+
+    Action<Topics> updateAction = c =>
+    {
+        if (!string.IsNullOrEmpty(topic.Title))
+            c.Title = topic.Title;
+
+        if (!string.IsNullOrEmpty(topic.Category))
+            c.Category = topic.Category;
+    };
+
+    var repository = new Repository();
+    return await repository.UpdateCollectionAsync<Topics>(filePath,
+                                                   filter: c => c.Id == topic.Id,
+                                                   updateAction: updateAction);
 });
 #endregion
 

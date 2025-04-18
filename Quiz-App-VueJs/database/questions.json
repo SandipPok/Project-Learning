@@ -10,6 +10,7 @@
       "immutable int MAX_VALUE = 100;"
     ],
     "correctAnswer": 1,
+    "selectedAnswer": null,
     "facts": [
       "Constants in C# are immutable values that are known at compile time.",
       "Constants are declared using the const keyword followed by the type and name.",
@@ -27,8 +28,9 @@
     "id": "q2",
     "subtopicId": "cs-basics",
     "text": "Which of the following is a value type in C#?",
-    "options": ["string", "object", "int", "dynamic"],
+    "options": [ "string", "object", "int", "dynamic" ],
     "correctAnswer": 2,
+    "selectedAnswer": null,
     "facts": [
       "Value types in C# store the actual data directly in memory allocated on the stack.",
       "Reference types store a reference to the data, with the actual data stored on the heap.",
@@ -53,6 +55,7 @@
       "To make a class immutable"
     ],
     "correctAnswer": 1,
+    "selectedAnswer": null,
     "facts": [
       "The sealed keyword prevents other classes from inheriting from a class.",
       "Sealed classes can be instantiated and used normally.",
@@ -70,8 +73,9 @@
     "id": "q4",
     "subtopicId": "mvc-basics",
     "text": "Which of the following is responsible for handling user requests in ASP.NET Core MVC?",
-    "options": ["Model", "View", "Controller", "Router"],
+    "options": [ "Model", "View", "Controller", "Router" ],
     "correctAnswer": 2,
+    "selectedAnswer": null,
     "facts": [
       "Controllers in MVC handle incoming HTTP requests and decide what response to send back.",
       "Controllers contain action methods that correspond to different routes and HTTP verbs.",
@@ -96,6 +100,7 @@
       "To manage database connections"
     ],
     "correctAnswer": 1,
+    "selectedAnswer": null,
     "facts": [
       "ViewBag is a dynamic property that allows passing data from controller to view.",
       "ViewBag uses the dynamic feature of C# to create properties at runtime.",
@@ -120,6 +125,7 @@
       "To handle user authentication"
     ],
     "correctAnswer": 1,
+    "selectedAnswer": null,
     "facts": [
       "DbContext is the primary class that coordinates Entity Framework functionality for a data model.",
       "DbContext represents a session with the database, allowing querying and saving data.",

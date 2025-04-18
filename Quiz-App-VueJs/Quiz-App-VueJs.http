@@ -4,10 +4,20 @@
 GET {{Quiz_App_VueJs_HostAddress}}/getTopics/
 Accept: application/json
 
-### Get SubTopics v1
+### Get SubTopics v2
 GET {{Quiz_App_VueJs_HostAddress}}/getSubTopics?id=1
 Accept: application/json
 
-### Get Questions v1
+### Get Questions v2
 GET {{Quiz_App_VueJs_HostAddress}}/getQuestions?subTopicId=cs-basics
 Accept: application/json
+
+### Get Questions v2
+PUT {{Quiz_App_VueJs_HostAddress}}/updateTopics
+Accept: application/json
+Content-Type: application/json
+{
+    "id": 3,
+    "title": "Entity Framework Core",
+    "category": ".Net"
+  }

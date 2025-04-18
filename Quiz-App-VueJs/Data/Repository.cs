@@ -40,5 +40,34 @@ namespace Quiz_App_VueJs.Data
 
             return results;
         }
+
+        public async Task<ICollection<T>> UpdateCollectionAsync<T>(string filePath, Func<T, bool>? filter = null, Action<T>? updateAction = null)
+        {
+            try
+            {
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"File not found: {filePath}");
+
+                var json = await File.ReadAllTextAsync(filePath);
+                var collection = JsonSerializer.Deserialize<List<T>>(json) ?? new List<T>();
+
+                if (filter != null && updateAction != null)
+                {
+                    foreach (var item in collection.Where(filter))
+                    {
+                        updateAction(item);
+                    }
+                }
+
+                var updatedJson = JsonSerializer.Serialize(collection, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(filePath, updatedJson);
+
+                return collection;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }
