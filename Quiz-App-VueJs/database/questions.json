@@ -10,7 +10,7 @@
       "immutable int MAX_VALUE = 100;"
     ],
     "correctAnswer": 1,
-    "selectedAnswer": null,
+    "selectedAnswer": 1,
     "facts": [
       "Constants in C# are immutable values that are known at compile time.",
       "Constants are declared using the const keyword followed by the type and name.",
@@ -28,7 +28,12 @@
     "id": "q2",
     "subtopicId": "cs-basics",
     "text": "Which of the following is a value type in C#?",
-    "options": [ "string", "object", "int", "dynamic" ],
+    "options": [
+      "string",
+      "object",
+      "int",
+      "dynamic"
+    ],
     "correctAnswer": 2,
     "selectedAnswer": null,
     "facts": [
@@ -73,7 +78,12 @@
     "id": "q4",
     "subtopicId": "mvc-basics",
     "text": "Which of the following is responsible for handling user requests in ASP.NET Core MVC?",
-    "options": [ "Model", "View", "Controller", "Router" ],
+    "options": [
+      "Model",
+      "View",
+      "Controller",
+      "Router"
+    ],
     "correctAnswer": 2,
     "selectedAnswer": null,
     "facts": [

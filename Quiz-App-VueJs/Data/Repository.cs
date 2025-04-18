@@ -3,6 +3,7 @@
 using Quiz_App_VueJs.Models;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Quiz_App_VueJs.Data
@@ -59,7 +60,12 @@ namespace Quiz_App_VueJs.Data
                     }
                 }
 
-                var updatedJson = JsonSerializer.Serialize(collection, new JsonSerializerOptions { WriteIndented = true });
+                var updatedJson = JsonSerializer.Serialize(collection, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                });
+
                 await File.WriteAllTextAsync(filePath, updatedJson);
 
                 return collection;
@@ -69,5 +75,6 @@ namespace Quiz_App_VueJs.Data
                 throw;
             }
         }
+
     }
 }

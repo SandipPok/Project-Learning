@@ -12,7 +12,7 @@ Accept: application/json
 GET {{Quiz_App_VueJs_HostAddress}}/getQuestions?subTopicId=cs-basics
 Accept: application/json
 
-### Get Questions v2
+### Update Topics v2
 PUT {{Quiz_App_VueJs_HostAddress}}/updateTopics
 Accept: application/json
 Content-Type: application/json
@@ -20,4 +20,34 @@ Content-Type: application/json
     "id": 3,
     "title": "Entity Framework Core",
     "category": ".Net"
-  }
+}
+
+### Update Questions v2
+PUT {{Quiz_App_VueJs_HostAddress}}/updateQuestions
+Accept: application/json
+Content-Type: application/json
+{
+    "id": "q1",
+    "subtopicId": "cs-basics",
+    "text": "What is the correct way to declare a constant in C#?",
+    "options": [
+      "static readonly int MAX_VALUE = 100;",
+      "const int MAX_VALUE = 100;",
+      "final int MAX_VALUE = 100;",
+      "immutable int MAX_VALUE = 100;"
+    ],
+    "correctAnswer": 1,
+    "selectedAnswer": 1,
+    "facts": [
+      "Constants in C# are immutable values that are known at compile time.",
+      "Constants are declared using the const keyword followed by the type and name.",
+      "Constants must be initialized at the time of declaration.",
+      "Only primitive types (such as int, string, bool) can be declared as constants."
+    ],
+    "examples": [
+      "const int MAX_USERS = 100; // Integer constant",
+      "const string CONNECTION_STRING = \"Server=myServerAddress;Database=myDataBase;\"; // String constant",
+      "const double PI = 3.14159; // Double constant",
+      "const char GRADE_A = 'A'; // Character constant"
+    ]
+}
