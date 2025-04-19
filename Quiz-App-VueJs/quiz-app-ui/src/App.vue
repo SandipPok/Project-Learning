@@ -521,6 +521,16 @@ const isAnswerCorrect = question => {
 const resetSubtopicProgress = () => {
   if (!selectedSubtopic.value) return
 
+  fetch('https://localhost:44358/api/v2/updateQuestions', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      selectedAnswer: null,
+    }),
+  }).catch(err => console.error('Error saving answer:', err))
+
   questions.value
     .filter(q => q.subtopicId === selectedSubtopic.value.id)
     .forEach(q => {
@@ -532,9 +542,20 @@ const resetSubtopicProgress = () => {
 }
 
 const handleAnswerSelect = (questionId, answerIndex) => {
+  if (questions.value.find(q => q.id == questionId).selectedAnswer !== null) return
   const question = questions.value.find(q => q.id === questionId)
   if (question) {
     question.selectedAnswer = answerIndex
+    fetch('https://localhost:44358/api/v2/updateQuestions', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: questionId,
+        selectedAnswer: answerIndex,
+      }),
+    }).catch(err => console.error('Error saving answer:', err))
   }
   showScore.value = true
 }

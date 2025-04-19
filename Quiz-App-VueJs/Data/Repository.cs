@@ -42,7 +42,10 @@ namespace Quiz_App_VueJs.Data
             return results;
         }
 
-        public async Task<ICollection<T>> UpdateCollectionAsync<T>(string filePath, Func<T, bool>? filter = null, Action<T>? updateAction = null)
+        public async Task<ICollection<T>> UpdateCollectionAsync<T>(
+            string filePath,
+            Func<T, bool>? filter = null,
+            Action<T>? updateAction = null)
         {
             try
             {
@@ -52,9 +55,14 @@ namespace Quiz_App_VueJs.Data
                 var json = await File.ReadAllTextAsync(filePath);
                 var collection = JsonSerializer.Deserialize<List<T>>(json) ?? new List<T>();
 
-                if (filter != null && updateAction != null)
+                // If update action is provided
+                if (updateAction != null)
                 {
-                    foreach (var item in collection.Where(filter))
+                    // If no filter is provided, update all items
+                    // Otherwise, update only the filtered items
+                    var itemsToUpdate = filter == null ? collection : collection.Where(filter);
+
+                    foreach (var item in itemsToUpdate)
                     {
                         updateAction(item);
                     }
@@ -75,6 +83,5 @@ namespace Quiz_App_VueJs.Data
                 throw;
             }
         }
-
     }
 }

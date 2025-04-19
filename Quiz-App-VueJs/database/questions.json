@@ -35,7 +35,7 @@
       "dynamic"
     ],
     "correctAnswer": 2,
-    "selectedAnswer": null,
+    "selectedAnswer": 2,
     "facts": [
       "Value types in C# store the actual data directly in memory allocated on the stack.",
       "Reference types store a reference to the data, with the actual data stored on the heap.",
@@ -60,7 +60,7 @@
       "To make a class immutable"
     ],
     "correctAnswer": 1,
-    "selectedAnswer": null,
+    "selectedAnswer": 1,
     "facts": [
       "The sealed keyword prevents other classes from inheriting from a class.",
       "Sealed classes can be instantiated and used normally.",
@@ -85,7 +85,7 @@
       "Router"
     ],
     "correctAnswer": 2,
-    "selectedAnswer": null,
+    "selectedAnswer": 2,
     "facts": [
       "Controllers in MVC handle incoming HTTP requests and decide what response to send back.",
       "Controllers contain action methods that correspond to different routes and HTTP verbs.",
@@ -110,7 +110,7 @@
       "To manage database connections"
     ],
     "correctAnswer": 1,
-    "selectedAnswer": null,
+    "selectedAnswer": 1,
     "facts": [
       "ViewBag is a dynamic property that allows passing data from controller to view.",
       "ViewBag uses the dynamic feature of C# to create properties at runtime.",
@@ -135,7 +135,7 @@
       "To handle user authentication"
     ],
     "correctAnswer": 1,
-    "selectedAnswer": null,
+    "selectedAnswer": 1,
     "facts": [
       "DbContext is the primary class that coordinates Entity Framework functionality for a data model.",
       "DbContext represents a session with the database, allowing querying and saving data.",

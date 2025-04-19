@@ -297,6 +297,10 @@ apiV2.MapPut("/updateTopics", async ([FromBody] Topics topic) =>
 apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
 {
     string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
+
+    Func<Questions, bool>? filter =
+    string.IsNullOrEmpty(question.Id) ? null : c => c.Id == question.Id;
+
     Action<Questions> updateAction = c =>
     {
         if (!string.IsNullOrEmpty(question.SubTopicId))
@@ -308,7 +312,7 @@ apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
         if (question.Options != null && question.Options.Count > 0)
             c.Options = question.Options;
 
-        if (question.SelectedAnswer > 0)
+        if (question.SelectedAnswer > 0 || question.SelectedAnswer == null)
             c.SelectedAnswer = question.SelectedAnswer;
 
         if (question.Facts != null && question.Facts.Count > 0)
@@ -319,7 +323,7 @@ apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
     };
     var repository = new Repository();
     return await repository.UpdateCollectionAsync<Questions>(filePath,
-                                                   filter: c => c.Id == question.Id,
+                                                   filter: filter,
                                                    updateAction: updateAction);
 });
 #endregion
