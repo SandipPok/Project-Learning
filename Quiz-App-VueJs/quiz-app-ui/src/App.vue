@@ -417,161 +417,11 @@ import {
 import { ref, computed, onMounted } from 'vue'
 
 // Data - Decoupled structure
-const topics = ref([
-  { id: '1', title: 'C# Fundamentals', category: '.NET' },
-  { id: '2', title: 'ASP.NET Core MVC', category: '.NET' },
-  { id: '3', title: 'Entity Framework Core', category: '.NET' },
-])
+const topics = ref([])
 
-const subtopics = ref([
-  { id: 'cs-basics', topicId: '1', title: 'Basic Concepts' },
-  { id: 'cs-oop', topicId: '1', title: 'Object-Oriented Programming' },
-  { id: 'mvc-basics', topicId: '2', title: 'MVC Pattern' },
-  { id: 'ef-basics', topicId: '3', title: 'Basic Concepts' },
-])
+const subtopics = ref([])
 
-const questions = ref([
-  {
-    id: 'q1',
-    subtopicId: 'cs-basics',
-    text: 'What is the correct way to declare a constant in C#?',
-    options: [
-      'static readonly int MAX_VALUE = 100;',
-      'const int MAX_VALUE = 100;',
-      'final int MAX_VALUE = 100;',
-      'immutable int MAX_VALUE = 100;',
-    ],
-    correctAnswer: 1,
-    selectedAnswer: null,
-    facts: [
-      'Constants in C# are immutable values that are known at compile time.',
-      'Constants are declared using the const keyword followed by the type and name.',
-      'Constants must be initialized at the time of declaration.',
-      'Only primitive types (such as int, string, bool) can be declared as constants.',
-    ],
-    examples: [
-      'const int MAX_USERS = 100; // Integer constant',
-      'const string CONNECTION_STRING = "Server=myServerAddress;Database=myDataBase;"; // String constant',
-      'const double PI = 3.14159; // Double constant',
-      "const char GRADE_A = 'A'; // Character constant",
-    ],
-  },
-  {
-    id: 'q2',
-    subtopicId: 'cs-basics',
-    text: 'Which of the following is a value type in C#?',
-    options: ['string', 'object', 'int', 'dynamic'],
-    correctAnswer: 2,
-    selectedAnswer: null,
-    facts: [
-      'Value types in C# store the actual data directly in memory allocated on the stack.',
-      'Reference types store a reference to the data, with the actual data stored on the heap.',
-      'Value types include all numeric types, bool, char, and structs.',
-      'Value types are copied when assigned to a new variable or passed to a method.',
-    ],
-    examples: [
-      'int number = 42; // Value type',
-      'bool isActive = true; // Value type',
-      "char letter = 'A'; // Value type",
-      'struct Point { public int X; public int Y; } // Custom value type',
-    ],
-  },
-  {
-    id: 'q3',
-    subtopicId: 'cs-oop',
-    text: 'What is the purpose of the "sealed" keyword in C#?',
-    options: [
-      'To prevent a class from being instantiated',
-      'To prevent a class from being inherited',
-      'To make a class thread-safe',
-      'To make a class immutable',
-    ],
-    correctAnswer: 1,
-    selectedAnswer: null,
-    facts: [
-      'The sealed keyword prevents other classes from inheriting from a class.',
-      'Sealed classes can be instantiated and used normally.',
-      'Methods and properties can also be marked as sealed in derived classes.',
-      'Sealed classes can improve performance as the compiler can optimize certain aspects.',
-    ],
-    examples: [
-      'public sealed class Logger { /* ... */ } // Cannot be inherited',
-      'public class Shape { public virtual void Draw() { } }',
-      'public class Circle : Shape { public sealed override void Draw() { } } // Method cannot be overridden in derived classes',
-      'public class SpecialCircle : Circle { /* Cannot override Draw() */ }',
-    ],
-  },
-  {
-    id: 'q4',
-    subtopicId: 'mvc-basics',
-    text: 'Which of the following is responsible for handling user requests in ASP.NET Core MVC?',
-    options: ['Model', 'View', 'Controller', 'Router'],
-    correctAnswer: 2,
-    selectedAnswer: null,
-    facts: [
-      'Controllers in MVC handle incoming HTTP requests and decide what response to send back.',
-      'Controllers contain action methods that correspond to different routes and HTTP verbs.',
-      'Controllers interact with models to retrieve or update data.',
-      'Controllers select which view to render as the response.',
-    ],
-    examples: [
-      'public class HomeController : Controller { public IActionResult Index() { return View(); } }',
-      '[HttpPost] public IActionResult Create(ProductModel product) { /* Save product */ return RedirectToAction("Index"); }',
-      '[Route("api/[controller]")] public class ProductsController : ControllerBase { /* API endpoints */ }',
-      'public IActionResult Details(int id) { var product = _repository.GetById(id); return View(product); }',
-    ],
-  },
-  {
-    id: 'q5',
-    subtopicId: 'mvc-basics',
-    text: 'What is the purpose of the ViewBag in ASP.NET Core MVC?',
-    options: [
-      'To store session state',
-      'To pass data from controller to view',
-      'To handle form submissions',
-      'To manage database connections',
-    ],
-    correctAnswer: 1,
-    selectedAnswer: null,
-    facts: [
-      'ViewBag is a dynamic property that allows passing data from controller to view.',
-      'ViewBag uses the dynamic feature of C# to create properties at runtime.',
-      'ViewBag data is only available during the current request.',
-      'ViewData is an alternative to ViewBag that uses a dictionary instead of dynamic properties.',
-    ],
-    examples: [
-      'public IActionResult Index() { ViewBag.Title = "Home Page"; return View(); }',
-      'In view: <h1>@ViewBag.Title</h1>',
-      'ViewBag.UserList = new List<User>(); // Passing a collection',
-      'ViewBag.CurrentDate = DateTime.Now; // Passing a DateTime object',
-    ],
-  },
-  {
-    id: 'q6',
-    subtopicId: 'ef-basics',
-    text: 'What is the purpose of DbContext in Entity Framework Core?',
-    options: [
-      'To handle HTTP requests',
-      'To manage database connections and operations',
-      'To render views',
-      'To handle user authentication',
-    ],
-    correctAnswer: 1,
-    selectedAnswer: null,
-    facts: [
-      'DbContext is the primary class that coordinates Entity Framework functionality for a data model.',
-      'DbContext represents a session with the database, allowing querying and saving data.',
-      'DbContext includes DbSet<T> properties that represent collections of entities in the database.',
-      'DbContext manages change tracking, caching, and transaction management.',
-    ],
-    examples: [
-      'public class ApplicationDbContext : DbContext { public DbSet<Customer> Customers { get; set; } }',
-      'using (var context = new ApplicationDbContext()) { var customers = context.Customers.ToList(); }',
-      'context.Customers.Add(new Customer { Name = "John Doe" }); context.SaveChanges();',
-      'var customer = context.Customers.Find(1); customer.Name = "Jane Doe"; context.SaveChanges();',
-    ],
-  },
-])
+const questions = ref([])
 
 // Reactive state
 const selectedTopic = ref(null)
@@ -637,7 +487,15 @@ const toggleCategory = category => {
   expandedCategories.value[category] = !expandedCategories.value[category]
 }
 
-const handleTopicSelect = topic => {
+const handleTopicSelect = async topic => {
+  await fetch(`https://localhost:44358/api/v2/getSubTopics?id=${topic.id}`)
+    .then(data => data.json())
+    .then(res => {
+      subtopics.value = res.subTopics
+      questions.value = res.questions
+    })
+    .catch(err => console.error('Error fetching subtopics:', err))
+
   selectedTopic.value = topic
   selectedSubtopic.value = null
   currentQuestionIndex.value = 0
@@ -648,7 +506,7 @@ const getSubtopicsForTopic = topicId => {
   return subtopics.value.filter(subtopic => subtopic.topicId === topicId)
 }
 
-const handleSubtopicSelect = subtopic => {
+const handleSubtopicSelect = async subtopic => {
   selectedSubtopic.value = subtopic
   currentQuestionIndex.value = 0
   showFacts.value = false
@@ -759,22 +617,15 @@ const handleDrop = e => {
   }
 }
 
-// // LocalStorage persistence
-// const STORAGE_KEY = 'quiz-app-answers'
-
-// const loadAnswersFromStorage = () => {
-//   const savedAnswers = localStorage.getItem(STORAGE_KEY)
-//   if (savedAnswers) {
-//     answers.value = JSON.parse(savedAnswers)
-//   }
-// }
-
-// const saveAnswersToStorage = () => {
-//   localStorage.setItem(STORAGE_KEY, JSON.stringify(answers.value))
-// }
-
 // // Load answers when component mounts
-// onMounted(() => {
-//   loadAnswersFromStorage()
-// })
+onMounted(() => {
+  loadAllTopics()
+})
+
+async function loadAllTopics() {
+  await fetch('https://localhost:44358/api/v2/getTopics')
+    .then(data => data.json())
+    .then(res => (topics.value = res))
+    .catch(err => console.error('Error fetching topics:', err))
+}
 </script>
