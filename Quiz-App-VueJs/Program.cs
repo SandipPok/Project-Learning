@@ -199,59 +199,57 @@ apiV1.MapGet("/getQuestions", async (string? subTopicId) =>
 
 #region v2
 var apiV2 = app.MapGroup("/api/v2");
+string topicsPath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
+string subtopicsPath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\subtopics.json";
+string questionsPath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
+
+var repository = new Repository();
+
 apiV2.MapGet("/getTopics", async () =>
 {
-    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
-    var repository = new Repository();
-    var topics = await repository.GetCollectionAsync<Topics>(filePath);
+    //var repository = new Repository();
+    var topics = await repository.GetCollectionAsync<Topics>(topicsPath);
     return Results.Ok(topics);
 });
 
-//apiV2.MapGet("/getSubTopics", async (int id) =>
-//{
-//    if (id <= 0)
-//        return Results.BadRequest("Invalid Topic ID.");
+apiV2.MapGet("/getTopicProgress", async (int topicId) =>
+{
+    if (topicId <= 0)
+        return Results.BadRequest("Invalid Topic ID.");
 
-//    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\subtopics.json";
-//    var repository = new Repository();
+    // Load subtopics for the given topic
+    var subtopics = await repository.GetCollectionAsync<SubTopics>(
+        subtopicsPath,
+        s => s.TopicId == topicId
+    );
 
-//    var subtopics = await repository.GetCollectionAsync<SubTopics>(
-//        filePath,
-//        s => s.TopicId == id
-//    );
+    if (subtopics.Count == 0)
+        return Results.NotFound($"No subtopics found for TopicId {topicId}.");
 
-//    return subtopics.Count == 0
-//        ? Results.NotFound($"No subtopics found for TopicId {id}.")
-//        : Results.Ok(subtopics);
-//});
+    // Load questions for the subtopics
+    var questions = await repository.GetCollectionAsync<Questions>(
+        questionsPath,
+        q => subtopics.Any(s => s.Id.Equals(q.SubTopicId, StringComparison.OrdinalIgnoreCase))
+    );
 
-//apiV2.MapGet("/getQuestions", async (string? subTopicId) =>
-//{
-//    if (string.IsNullOrEmpty(subTopicId))
-//        return Results.BadRequest("SubTopic ID is required.");
+    if (questions.Count == 0)
+        return Results.Ok(new { progress = 0 });
 
-//    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
-//    var repository = new Repository();
+    // Calculate progress
+    int totalQuestions = questions.Count;
+    int answeredCorrectly = questions.Count(q => q.SelectedAnswer.HasValue && q.SelectedAnswer == q.CorrectAnswer);
 
-//    var questions = await repository.GetCollectionAsync<Questions>(
-//        filePath,
-//        q => q.SubTopicId?.Equals(subTopicId, StringComparison.OrdinalIgnoreCase) == true
-//    );
+    double progress = (double)answeredCorrectly / totalQuestions * 100;
 
-//    return questions.Count == 0
-//        ? Results.NotFound($"No questions found for subTopicId '{subTopicId}'.")
-//        : Results.Ok(questions);
-//});
+    return Results.Ok(new { progress = Math.Round(progress, 2) });
+});
 
 apiV2.MapGet("/getSubTopics", async (int id) =>
 {
     if (id <= 0)
         return Results.BadRequest("Invalid Topic ID.");
 
-    string subtopicsPath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\subtopics.json";
-    string questionsPath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
-
-    var repository = new Repository();
+    //var repository = new Repository();
 
     var subtopics = await repository.GetCollectionAsync<SubTopics>(
         subtopicsPath,
@@ -277,8 +275,6 @@ apiV2.MapGet("/getSubTopics", async (int id) =>
 
 apiV2.MapPut("/updateTopics", async ([FromBody] Topics topic) =>
 {
-    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\topics.json";
-
     Action<Topics> updateAction = c =>
     {
         if (!string.IsNullOrEmpty(topic.Title))
@@ -288,18 +284,16 @@ apiV2.MapPut("/updateTopics", async ([FromBody] Topics topic) =>
             c.Category = topic.Category;
     };
 
-    var repository = new Repository();
-    return await repository.UpdateCollectionAsync<Topics>(filePath,
+    //var repository = new Repository();
+    return await repository.UpdateCollectionAsync<Topics>(topicsPath,
                                                    filter: c => c.Id == topic.Id,
                                                    updateAction: updateAction);
 });
 
 apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
 {
-    string filePath = @"D:\DotNet\Learning Project Net\Quiz-App-VueJs\database\questions.json";
-
     Func<Questions, bool>? filter =
-    string.IsNullOrEmpty(question.Id) ? null : c => c.Id == question.Id;
+     string.IsNullOrEmpty(question.Id) ? null : c => c.Id == question.Id;
 
     Action<Questions> updateAction = c =>
     {
@@ -321,8 +315,8 @@ apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
         if (question.Examples != null && question.Examples.Count > 0)
             c.Examples = question.Examples;
     };
-    var repository = new Repository();
-    return await repository.UpdateCollectionAsync<Questions>(filePath,
+    //var repository = new Repository();
+    return await repository.UpdateCollectionAsync<Questions>(questionsPath,
                                                    filter: filter,
                                                    updateAction: updateAction);
 });

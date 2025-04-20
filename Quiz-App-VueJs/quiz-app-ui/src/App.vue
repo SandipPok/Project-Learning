@@ -46,19 +46,36 @@
                 <ChevronDown v-else class="w-4 h-4" />
               </button>
               <div v-if="expandedCategories[category.name]">
-                <button
+                <div
                   v-for="topic in topicsByCategory[category.name]"
                   :key="topic.id"
                   @click="handleTopicSelect(topic)"
                   :class="[
-                    'w-full text-left px-6 py-2 text-sm rounded-md transition-colors',
+                    'px-4 py-3 rounded-lg transition-colors cursor-pointer',
+                    'hover:bg-indigo-50 hover:border-indigo-100',
                     selectedTopic?.id === topic.id
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-gray-700 hover:bg-gray-50',
+                      ? 'bg-indigo-50 border border-indigo-200'
+                      : 'border border-transparent',
                   ]"
                 >
-                  {{ topic.title }}
-                </button>
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-gray-800">{{ topic.title }}</span>
+                    <span class="text-xs text-indigo-600">{{ topic.progress }}%</span>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div class="mt-2 flex items-center gap-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                        :style="{ width: `${topic.progress}%` }"
+                      ></div>
+                    </div>
+                    <span class="text-xs text-gray-500 whitespace-nowrap">
+                      {{ topic.answered }}/{{ topic.total }} questions
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -521,6 +538,39 @@ const isAnswerCorrect = question => {
 const resetSubtopicProgress = () => {
   if (!selectedSubtopic.value) return
 
+  // Reset selected answers for the current subtopic
+  questions.value
+    .filter(q => q.subtopicId === selectedSubtopic.value.id)
+    .forEach(q => {
+      q.selectedAnswer = null
+    })
+
+  // Update the progress for the current topic
+  if (selectedTopic.value) {
+    const topicSubtopics = getSubtopicsForTopic(selectedTopic.value.id)
+    const topicQuestions = topicSubtopics.flatMap(subtopic =>
+      questions.value.filter(q => q.subtopicId === subtopic.id)
+    )
+
+    const totalQuestions = topicQuestions.length
+    const answeredQuestions = topicQuestions.filter(q => q.selectedAnswer !== null).length
+
+    const progress = totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0
+
+    // Update the topic's progress in the topics array
+    const topicIndex = topics.value.findIndex(t => t.id === selectedTopic.value.id)
+    if (topicIndex !== -1) {
+      topics.value[topicIndex].progress = progress
+      topics.value[topicIndex].answered = answeredQuestions
+      topics.value[topicIndex].total = totalQuestions
+    }
+  }
+
+  // Reset the current question index and hide the score
+  currentQuestionIndex.value = 0
+  showScore.value = false
+
+  // Optionally, reset the progress on the backend
   fetch('https://localhost:44358/api/v2/updateQuestions', {
     method: 'PUT',
     headers: {
@@ -530,22 +580,40 @@ const resetSubtopicProgress = () => {
       selectedAnswer: null,
     }),
   }).catch(err => console.error('Error saving answer:', err))
-
-  questions.value
-    .filter(q => q.subtopicId === selectedSubtopic.value.id)
-    .forEach(q => {
-      q.selectedAnswer = null
-    })
-
-  currentQuestionIndex.value = 0
-  showScore.value = false
 }
 
 const handleAnswerSelect = (questionId, answerIndex) => {
-  if (questions.value.find(q => q.id == questionId).selectedAnswer !== null) return
+  // Prevent updating if the question is already answered
+  if (questions.value.find(q => q.id === questionId).selectedAnswer !== null) return
+
   const question = questions.value.find(q => q.id === questionId)
   if (question) {
+    // Update the selected answer locally
     question.selectedAnswer = answerIndex
+
+    // Update the progress for the current topic
+    if (selectedTopic.value) {
+      const topicSubtopics = getSubtopicsForTopic(selectedTopic.value.id)
+      const topicQuestions = topicSubtopics.flatMap(subtopic =>
+        questions.value.filter(q => q.subtopicId === subtopic.id)
+      )
+
+      const totalQuestions = topicQuestions.length
+      const answeredQuestions = topicQuestions.filter(q => q.selectedAnswer !== null).length
+
+      const progress =
+        totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0
+
+      // Update the topic's progress in the topics array
+      const topicIndex = topics.value.findIndex(t => t.id === selectedTopic.value.id)
+      if (topicIndex !== -1) {
+        topics.value[topicIndex].progress = progress
+        topics.value[topicIndex].answered = answeredQuestions
+        topics.value[topicIndex].total = totalQuestions
+      }
+    }
+
+    // Optionally, save the selected answer to the backend
     fetch('https://localhost:44358/api/v2/updateQuestions', {
       method: 'PUT',
       headers: {
@@ -557,6 +625,7 @@ const handleAnswerSelect = (questionId, answerIndex) => {
       }),
     }).catch(err => console.error('Error saving answer:', err))
   }
+
   showScore.value = true
 }
 
@@ -638,15 +707,40 @@ const handleDrop = e => {
   }
 }
 
+const fetchTopicProgress = async topicId => {
+  try {
+    const response = await fetch(
+      `https://localhost:44358/api/v2/getTopicProgress?topicId=${topicId}`
+    )
+    const data = await response.json()
+    return data.progress || 0
+  } catch (error) {
+    console.error(`Error fetching progress for topic ${topicId}:`, error)
+    return 0
+  }
+}
+
 // // Load answers when component mounts
 onMounted(() => {
   loadAllTopics()
 })
 
 async function loadAllTopics() {
-  await fetch('https://localhost:44358/api/v2/getTopics')
-    .then(data => data.json())
-    .then(res => (topics.value = res))
-    .catch(err => console.error('Error fetching topics:', err))
+  try {
+    const response = await fetch('https://localhost:44358/api/v2/getTopics')
+    const topicsData = await response.json()
+
+    // Fetch progress for each topic
+    const topicsWithProgress = await Promise.all(
+      topicsData.map(async topic => {
+        const progress = await fetchTopicProgress(topic.id)
+        return { ...topic, progress }
+      })
+    )
+
+    topics.value = topicsWithProgress
+  } catch (error) {
+    console.error('Error fetching topics:', error)
+  }
 }
 </script>
