@@ -10,7 +10,7 @@
       "Module Import, Function Definition, Execution Block"
     ],
     "correctAnswer": 0,
-    "selectedAnswer": null,
+    "selectedAnswer": 0,
     "facts": [
       "A basic C# console application typically includes an importing section, namespace declaration, class declaration, and a Main() method.",
       "The importing section uses `using` directives to include necessary namespaces.",
@@ -43,7 +43,7 @@
       "Run() method"
     ],
     "correctAnswer": 0,
-    "selectedAnswer": null,
+    "selectedAnswer": 0,
     "facts": [
       "Every C# console application starts execution from the Main() method.",
       "The Main() method can optionally accept an array of strings as arguments.",
@@ -65,7 +65,7 @@
       "using"
     ],
     "correctAnswer": 3,
-    "selectedAnswer": null,
+    "selectedAnswer": 3,
     "facts": [
       "The 'using' directive allows the use of types in a namespace without specifying the full path.",
       "It is commonly used at the top of C# files.",
@@ -87,7 +87,7 @@
       "It initializes the program"
     ],
     "correctAnswer": 2,
-    "selectedAnswer": null,
+    "selectedAnswer": 2,
     "facts": [
       "Namespaces group logically related classes and types.",
       "They help avoid name conflicts and organize code.",
@@ -108,7 +108,7 @@
       "static void Main(string[] args)"
     ],
     "correctAnswer": 3,
-    "selectedAnswer": null,
+    "selectedAnswer": 3,
     "facts": [
       "The correct and most common signature is static void Main(string[] args).",
       "It is static so the runtime can call it without creating an object.",
@@ -129,7 +129,7 @@
       "It will throw a runtime error"
     ],
     "correctAnswer": 1,
-    "selectedAnswer": null,
+    "selectedAnswer": 1,
     "facts": [
       "Console.WriteLine prints text to the standard output (typically the console window).",
       "It automatically adds a newline at the end of the output.",
@@ -137,6 +137,210 @@
     ],
     "examples": [
       "Console.WriteLine(\"Hello World\"); // Output: Hello World"
+    ]
+  },
+  {
+    "id": "q7",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to read a single character from the console in C#?",
+    "options": [
+      "Console.Read()",
+      "Console.ReadLine()",
+      "Console.ReadKey()",
+      "Console.ReadChar()"
+    ],
+    "correctAnswer": 2,
+    "selectedAnswer": 2,
+    "facts": [
+      "Console.ReadKey() reads the next character or function key pressed by the user.",
+      "It returns a ConsoleKeyInfo object, which includes information about the pressed key."
+    ],
+    "examples": [
+      "ConsoleKeyInfo keyInfo = Console.ReadKey();",
+      "Console.WriteLine(\"You pressed: \" + keyInfo.Key);"
+    ]
+  },
+  {
+    "id": "q8",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to read the next line of characters from the standard input stream?",
+    "options": [
+      "Console.Read()",
+      "Console.ReadLine()",
+      "Console.ReadKey()",
+      "Console.ReadToEnd()"
+    ],
+    "correctAnswer": 1,
+    "selectedAnswer": 1,
+    "facts": [
+      "Console.ReadLine() reads the next line of characters from the standard input stream.",
+      "It returns the input as a string."
+    ],
+    "examples": [
+      "string input = Console.ReadLine();",
+      "Console.WriteLine(\"You entered: \" + input);"
+    ]
+  },
+  {
+    "id": "q9",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to write a line terminator to the standard output stream?",
+    "options": [
+      "Console.Write()",
+      "Console.WriteLine()",
+      "Console.WriteEnd()",
+      "Console.WriteNewLine()"
+    ],
+    "correctAnswer": 1,
+    "selectedAnswer": 1,
+    "facts": [
+      "Console.WriteLine() writes the specified data, followed by the current line terminator, to the standard output stream.",
+      "It is commonly used to display output with a newline at the end."
+    ],
+    "examples": [
+      "Console.WriteLine(\"Hello, World!\");"
+    ]
+  },
+  {
+    "id": "q10",
+    "subtopicId": "cs-console",
+    "text": "Which property is used to get or set the background color of the console?",
+    "options": [
+      "Console.BackgroundColor",
+      "Console.BackColor",
+      "Console.BGColor",
+      "Console.ColorBackground"
+    ],
+    "correctAnswer": 0,
+    "selectedAnswer": 0,
+    "facts": [
+      "Console.BackgroundColor gets or sets the background color of the console.",
+      "It uses the ConsoleColor enumeration."
+    ],
+    "examples": [
+      "Console.BackgroundColor = ConsoleColor.Blue;",
+      "Console.Clear(); // Applies the background color to the entire console"
+    ]
+  },
+  {
+    "id": "q11",
+    "subtopicId": "cs-console",
+    "text": "Which property is used to get or set the foreground color of the console?",
+    "options": [
+      "Console.ForeColor",
+      "Console.FGColor",
+      "Console.ForegroundColor",
+      "Console.ColorForeground"
+    ],
+    "correctAnswer": 2,
+    "selectedAnswer": 2,
+    "facts": [
+      "Console.ForegroundColor gets or sets the foreground color of the console.",
+      "It uses the ConsoleColor enumeration."
+    ],
+    "examples": [
+      "Console.ForegroundColor = ConsoleColor.Yellow;",
+      "Console.WriteLine(\"This text is yellow.\");"
+    ]
+  },
+  {
+    "id": "q12",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to clear the console buffer and corresponding console window of display information?",
+    "options": [
+      "Console.Clear()",
+      "Console.Reset()",
+      "Console.Erase()",
+      "Console.Flush()"
+    ],
+    "correctAnswer": 0,
+    "selectedAnswer": 0,
+    "facts": [
+      "Console.Clear() clears the console buffer and the corresponding console window of display information.",
+      "It resets the cursor position to the top-left corner of the console."
+    ],
+    "examples": [
+      "Console.Clear();"
+    ]
+  },
+  {
+    "id": "q13",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to reset the console colors to their defaults?",
+    "options": [
+      "Console.ResetColor()",
+      "Console.DefaultColor()",
+      "Console.ClearColor()",
+      "Console.Reset()"
+    ],
+    "correctAnswer": 0,
+    "selectedAnswer": 0,
+    "facts": [
+      "Console.ResetColor() resets the console's foreground and background colors to their defaults.",
+      "It is useful after changing colors to revert to the original settings."
+    ],
+    "examples": [
+      "Console.ResetColor();"
+    ]
+  },
+  {
+    "id": "q14",
+    "subtopicId": "cs-console",
+    "text": "Which property is used to get or set the cursor's row position within the console buffer area?",
+    "options": [
+      "Console.CursorRow",
+      "Console.CursorTop",
+      "Console.TopCursor",
+      "Console.RowPosition"
+    ],
+    "correctAnswer": 1,
+    "selectedAnswer": 1,
+    "facts": [
+      "Console.CursorTop gets or sets the row position of the cursor within the console buffer area.",
+      "The topmost row is 0."
+    ],
+    "examples": [
+      "Console.CursorTop = 5;"
+    ]
+  },
+  {
+    "id": "q15",
+    "subtopicId": "cs-console",
+    "text": "Which property is used to get or set the cursor's column position within the console buffer area?",
+    "options": [
+      "Console.CursorLeft",
+      "Console.CursorColumn",
+      "Console.LeftCursor",
+      "Console.ColumnPosition"
+    ],
+    "correctAnswer": 0,
+    "selectedAnswer": 0,
+    "facts": [
+      "Console.CursorLeft gets or sets the column position of the cursor within the console buffer area.",
+      "The leftmost column is 0."
+    ],
+    "examples": [
+      "Console.CursorLeft = 10;"
+    ]
+  },
+  {
+    "id": "q16",
+    "subtopicId": "cs-console",
+    "text": "Which method is used to move the cursor to the specified position?",
+    "options": [
+      "Console.MoveCursor()",
+      "Console.SetPosition()",
+      "Console.CursorMove()",
+      "Console.SetCursorPosition()"
+    ],
+    "correctAnswer": 3,
+    "selectedAnswer": 3,
+    "facts": [
+      "Console.SetCursorPosition(int left, int top) sets the position of the cursor.",
+      "The parameters specify the column (left) and row (top) positions."
+    ],
+    "examples": [
+      "Console.SetCursorPosition(10, 5);"
     ]
   }
 ]

@@ -306,7 +306,7 @@ apiV2.MapPut("/updateQuestions", async ([FromBody] Questions question) =>
         if (question.Options != null && question.Options.Count > 0)
             c.Options = question.Options;
 
-        if (question.SelectedAnswer > 0 || question.SelectedAnswer == null)
+        if (question.SelectedAnswer >= 0 || question.SelectedAnswer == null)
             c.SelectedAnswer = question.SelectedAnswer;
 
         if (question.Facts != null && question.Facts.Count > 0)

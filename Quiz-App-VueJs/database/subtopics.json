@@ -5,6 +5,11 @@
     "title": "Basic Concepts"
   },
   {
+    "id": "cs-console",
+    "topicId": 1,
+    "title": "Methods and Properties of Console Class"
+  },
+  {
     "id": "cs-oop",
     "topicId": 1,
     "title": "Object-Oriented Programming"
