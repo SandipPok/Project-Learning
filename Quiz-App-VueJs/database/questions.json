@@ -2,151 +2,141 @@
   {
     "id": "q1",
     "subtopicId": "cs-basics",
-    "text": "What is the correct way to declare a constant in C#?",
+    "text": "What are the main sections of a basic C# console application structure?",
     "options": [
-      "static readonly int MAX_VALUE = 100;",
-      "const int MAX_VALUE = 100;",
-      "final int MAX_VALUE = 100;",
-      "immutable int MAX_VALUE = 100;"
+      "Importing section, Namespace Declaration, Class Declaration, Main() method",
+      "Header Files, Main Function, Body",
+      "Package Declaration, Interface Implementation, Main() method",
+      "Module Import, Function Definition, Execution Block"
     ],
-    "correctAnswer": 1,
+    "correctAnswer": 0,
     "selectedAnswer": null,
     "facts": [
-      "Constants in C# are immutable values that are known at compile time.",
-      "Constants are declared using the const keyword followed by the type and name.",
-      "Constants must be initialized at the time of declaration.",
-      "Only primitive types (such as int, string, bool) can be declared as constants."
+      "A basic C# console application typically includes an importing section, namespace declaration, class declaration, and a Main() method.",
+      "The importing section uses `using` directives to include necessary namespaces.",
+      "The `namespace` keyword declares a scope that contains a set of related objects.",
+      "The `class` contains methods and data members; the `Main()` method is the entry point of a C# console application."
     ],
     "examples": [
-      "const int MAX_USERS = 100; // Integer constant",
-      "const string CONNECTION_STRING = \"Server=myServerAddress;Database=myDataBase;\"; // String constant",
-      "const double PI = 3.14159; // Double constant",
-      "const char GRADE_A = 'A'; // Character constant"
+      "using System;",
+      "",
+      "namespace MyFirstProject",
+      "{",
+      "    class Program",
+      "    {",
+      "        static void Main(string[] args)",
+      "        {",
+      "            Console.WriteLine(\"Welcome to C#.NET\");",
+      "        }",
+      "    }",
+      "}"
     ]
   },
   {
     "id": "q2",
     "subtopicId": "cs-basics",
-    "text": "Which of the following is a value type in C#?",
+    "text": "What is the entry point of a C# console application?",
     "options": [
-      "string",
-      "object",
-      "int",
-      "dynamic"
+      "Main() method",
+      "Start() method",
+      "Program() method",
+      "Run() method"
     ],
-    "correctAnswer": 2,
+    "correctAnswer": 0,
     "selectedAnswer": null,
     "facts": [
-      "Value types in C# store the actual data directly in memory allocated on the stack.",
-      "Reference types store a reference to the data, with the actual data stored on the heap.",
-      "Value types include all numeric types, bool, char, and structs.",
-      "Value types are copied when assigned to a new variable or passed to a method."
+      "Every C# console application starts execution from the Main() method.",
+      "The Main() method can optionally accept an array of strings as arguments.",
+      "It is defined as static, meaning it can be called without instantiating the class."
     ],
     "examples": [
-      "int number = 42; // Value type",
-      "bool isActive = true; // Value type",
-      "char letter = 'A'; // Value type",
-      "struct Point { public int X; public int Y; } // Custom value type"
+      "static void Main(string[] args) { Console.WriteLine(\"Hello World\"); }",
+      "public static void Main() { }"
     ]
   },
   {
     "id": "q3",
-    "subtopicId": "cs-oop",
-    "text": "What is the purpose of the \"sealed\" keyword in C#?",
+    "subtopicId": "cs-basics",
+    "text": "Which keyword is used to include namespaces in a C# program?",
     "options": [
-      "To prevent a class from being instantiated",
-      "To prevent a class from being inherited",
-      "To make a class thread-safe",
-      "To make a class immutable"
+      "include",
+      "import",
+      "package",
+      "using"
     ],
-    "correctAnswer": 1,
+    "correctAnswer": 3,
     "selectedAnswer": null,
     "facts": [
-      "The sealed keyword prevents other classes from inheriting from a class.",
-      "Sealed classes can be instantiated and used normally.",
-      "Methods and properties can also be marked as sealed in derived classes.",
-      "Sealed classes can improve performance as the compiler can optimize certain aspects."
+      "The 'using' directive allows the use of types in a namespace without specifying the full path.",
+      "It is commonly used at the top of C# files.",
+      "It helps improve code readability and reduces verbosity."
     ],
     "examples": [
-      "public sealed class Logger { /* ... */ } // Cannot be inherited",
-      "public class Shape { public virtual void Draw() { } }",
-      "public class Circle : Shape { public sealed override void Draw() { } } // Method cannot be overridden in derived classes",
-      "public class SpecialCircle : Circle { /* Cannot override Draw() */ }"
+      "using System;",
+      "using System.Collections.Generic;"
     ]
   },
   {
     "id": "q4",
-    "subtopicId": "mvc-basics",
-    "text": "Which of the following is responsible for handling user requests in ASP.NET Core MVC?",
+    "subtopicId": "cs-basics",
+    "text": "In a C# console application, what is the purpose of the 'namespace' keyword?",
     "options": [
-      "Model",
-      "View",
-      "Controller",
-      "Router"
+      "It defines a class",
+      "It imports libraries",
+      "It groups related classes",
+      "It initializes the program"
     ],
     "correctAnswer": 2,
     "selectedAnswer": null,
     "facts": [
-      "Controllers in MVC handle incoming HTTP requests and decide what response to send back.",
-      "Controllers contain action methods that correspond to different routes and HTTP verbs.",
-      "Controllers interact with models to retrieve or update data.",
-      "Controllers select which view to render as the response."
+      "Namespaces group logically related classes and types.",
+      "They help avoid name conflicts and organize code.",
+      "The keyword 'namespace' is used to declare a namespace."
     ],
     "examples": [
-      "public class HomeController : Controller { public IActionResult Index() { return View(); } }",
-      "[HttpPost] public IActionResult Create(ProductModel product) { /* Save product */ return RedirectToAction(\"Index\"); }",
-      "[Route(\"api/[controller]\")] public class ProductsController : ControllerBase { /* API endpoints */ }",
-      "public IActionResult Details(int id) { var product = _repository.GetById(id); return View(product); }"
+      "namespace MyProject { class Program { } }"
     ]
   },
   {
     "id": "q5",
-    "subtopicId": "mvc-basics",
-    "text": "What is the purpose of the ViewBag in ASP.NET Core MVC?",
+    "subtopicId": "cs-basics",
+    "text": "Which method signature correctly represents the Main() method in a C# console app?",
     "options": [
-      "To store session state",
-      "To pass data from controller to view",
-      "To handle form submissions",
-      "To manage database connections"
+      "public static void Main(string args[])",
+      "void static Main()",
+      "Main()",
+      "static void Main(string[] args)"
     ],
-    "correctAnswer": 1,
+    "correctAnswer": 3,
     "selectedAnswer": null,
     "facts": [
-      "ViewBag is a dynamic property that allows passing data from controller to view.",
-      "ViewBag uses the dynamic feature of C# to create properties at runtime.",
-      "ViewBag data is only available during the current request.",
-      "ViewData is an alternative to ViewBag that uses a dictionary instead of dynamic properties."
+      "The correct and most common signature is static void Main(string[] args).",
+      "It is static so the runtime can call it without creating an object.",
+      "It returns void and can optionally take command-line arguments."
     ],
     "examples": [
-      "public IActionResult Index() { ViewBag.Title = \"Home Page\"; return View(); }",
-      "In view: <h1>@ViewBag.Title</h1>",
-      "ViewBag.UserList = new List<User>(); // Passing a collection",
-      "ViewBag.CurrentDate = DateTime.Now; // Passing a DateTime object"
+      "static void Main(string[] args) { Console.WriteLine(\"Hi\"); }"
     ]
   },
   {
     "id": "q6",
-    "subtopicId": "ef-basics",
-    "text": "What is the purpose of DbContext in Entity Framework Core?",
+    "subtopicId": "cs-basics",
+    "text": "What will the output of Console.WriteLine(\"Hello World\"); be?",
     "options": [
-      "To handle HTTP requests",
-      "To manage database connections and operations",
-      "To render views",
-      "To handle user authentication"
+      "Print Hello World in uppercase",
+      "Print Hello World to the output window",
+      "Print Hello World in bold",
+      "It will throw a runtime error"
     ],
     "correctAnswer": 1,
     "selectedAnswer": null,
     "facts": [
-      "DbContext is the primary class that coordinates Entity Framework functionality for a data model.",
-      "DbContext represents a session with the database, allowing querying and saving data.",
-      "DbContext includes DbSet<T> properties that represent collections of entities in the database.",
-      "DbContext manages change tracking, caching, and transaction management."
+      "Console.WriteLine prints text to the standard output (typically the console window).",
+      "It automatically adds a newline at the end of the output.",
+      "It is part of the System namespace."
     ],
     "examples": [
-      "public class ApplicationDbContext : DbContext { public DbSet<Customer> Customers { get; set; } }",
-      "using (var context = new ApplicationDbContext()) { var customers = context.Customers.ToList(); }",
-      "context.Customers.Add(new Customer { Name = \"John Doe\" }); context.SaveChanges();",
-      "var customer = context.Customers.Find(1); customer.Name = \"Jane Doe\"; context.SaveChanges();"
+      "Console.WriteLine(\"Hello World\"); // Output: Hello World"
     ]
   }
 ]

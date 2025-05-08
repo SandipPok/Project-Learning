@@ -84,12 +84,19 @@
         <!-- Subtopics and Questions -->
         <div class="col-span-9 space-y-6">
           <div v-if="selectedTopic" class="bg-white rounded-lg shadow-sm">
-            <div class="p-4 border-b">
+            <div class="p-4 border-b flex justify-between">
               <div class="flex items-center gap-2">
                 <span class="text-sm text-indigo-600">{{ selectedTopic.category }}</span>
                 <ChevronRight class="w-4 h-4 text-gray-400" />
                 <h2 class="text-lg font-semibold text-gray-900">{{ selectedTopic.title }}</h2>
               </div>
+              <button
+                @click="resetSubtopicProgress"
+                class="text-sm text-red-600 hover:text-red-800 flex items-center gap-1 cursor-pointer"
+              >
+                <RotateCcw class="w-4 h-4" />
+                Reset
+              </button>
             </div>
             <div class="p-4 grid grid-cols-2 gap-4">
               <div
@@ -137,13 +144,6 @@
                       {{ selectedSubtopicQuestions.length }}</span
                     >
                   </div>
-                  <button
-                    @click="resetSubtopicProgress"
-                    class="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
-                  >
-                    <RotateCcw class="w-4 h-4" />
-                    Reset
-                  </button>
                 </div>
               </div>
             </div>
